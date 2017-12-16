@@ -231,7 +231,7 @@ class Paddle(object):
 
         Args:
             display (SSD1351): OLED display.
-            width (Optional int): Paddle width (default 24).
+            width (Optional int): Paddle width (default 25).
             height (Optional int): Paddle height (default 8).
         """
         self.x = 51
