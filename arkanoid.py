@@ -421,7 +421,7 @@ def main():
     seed(ticks_us())
 
     # Generate bricks
-    MAX_LEVEL = const(8)
+    MAX_LEVEL = const(9)
     level = 1
     bricks = load_level(level, display)
 
