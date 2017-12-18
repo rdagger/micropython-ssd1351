@@ -1,4 +1,4 @@
-"""SSD1351 test program."""
+"""SSD1351 demo (shapes)."""
 from time import sleep
 from ssd1351 import Display, color565
 from machine import Pin, SPI

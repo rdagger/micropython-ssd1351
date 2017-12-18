@@ -21,7 +21,7 @@ class BouncingSprite(object):
             display (SSD1351): OLED display object.
             color (int): RGB565 color value.
         """
-        self.buf = display.load_sprite('images/Python41x49.raw', w, h)
+        self.buf = display.load_sprite(path, w, h)
         self.w = w
         self.h = h
         self.screen_width = screen_width
