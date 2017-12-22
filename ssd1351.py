@@ -4,7 +4,7 @@ from math import cos, sin, pi, radians
 
 
 def color565(r, g, b):
-    """"Return RGB565 color value.
+    """Return RGB565 color value.
 
     Args:
         r (int): Red value.
@@ -54,7 +54,7 @@ class Display(object):
     START_SCROLL = const(0x9F)
 
     def __init__(self, spi, cs, dc, rst, width=128, height=128):
-        """Constructor for OLED.
+        """Initialize OLED.
 
         Args:
             spi (Class Spi):  SPI interface for OLED
