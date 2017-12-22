@@ -13,7 +13,7 @@ class Ball(object):
 
     def __init__(self, x, y, x_speed, y_speed, display, width=7, height=7,
                  frozen=False):
-        """Constructor for ball.
+        """Initialize ball.
 
         Args:
             x, y (int):  X,Y coordinates.
@@ -111,7 +111,7 @@ class Brick(object):
     """Brick."""
 
     def __init__(self, x, y, color, display, width=13, height=7):
-        """Constructor for brick.
+        """Initialize brick.
 
         Args:
             x, y (int):  X,Y coordinates.
@@ -195,7 +195,7 @@ class Life(object):
     """Life."""
 
     def __init__(self, index, display, width=12, height=4):
-        """Constructor for life.
+        """Initialize life.
 
         Args:
             index (int): Life number (1-based).
@@ -227,7 +227,7 @@ class Paddle(object):
     """Paddle."""
 
     def __init__(self, display, width=25, height=8):
-        """Constructor for paddle.
+        """Initialize paddle.
 
         Args:
             display (SSD1351): OLED display.
@@ -283,7 +283,7 @@ class Powerup(object):
     """Power-up."""
 
     def __init__(self, x, y, display, width=16, height=16):
-        """Constructor for power-up.
+        """Initialize power-up.
 
         Args:
             x, y (int):  X,Y coordinates.
@@ -338,7 +338,7 @@ class Score(object):
     """Score."""
 
     def __init__(self, display):
-        """Constructor for score.
+        """Initialize score.
 
         Args:
             display (SSD1351): OLED display.
@@ -346,7 +346,7 @@ class Score(object):
         margin = 5
         self.display = display
         self.xfont = XglcdFont('fonts/NeatoReduced5x7.c', 5, 7)
-        self.display.draw_text(margin, 0, "SCORE:", self.xfont,
+        self.display.draw_text(margin, 0, 'SCORE:', self.xfont,
                                color565(255, 0, 0))
         text_length = self.xfont.measure_text('SCORE: ')
         self.x = text_length + margin
@@ -392,7 +392,7 @@ def load_level(level, display):
     path = 'levels/Level{0:03d}.bin'.format(level)
     level_size = stat(path)[6]
     level = bytearray(level_size)
-    with open(path, "rb") as f:
+    with open(path, 'rb') as f:
         f.readinto(level)
 
     for i in range(0, level_size, 3):
