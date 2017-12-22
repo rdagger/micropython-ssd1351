@@ -9,7 +9,7 @@ class BouncingSprite(object):
 
     def __init__(self, path, w, h, screen_width, screen_height,
                  speed, display):
-        """Initialize box.
+        """Initialize sprite.
 
         Args:
             path (string): Path of sprite image.
