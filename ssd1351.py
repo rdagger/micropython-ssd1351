@@ -1,7 +1,6 @@
 """SSD1351 OLED module."""
 from utime import sleep_ms
 from math import cos, sin, pi, radians
-import framebuf
 
 
 def color565(r, g, b):
