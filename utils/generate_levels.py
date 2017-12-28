@@ -1,4 +1,17 @@
-"""Arkanoid code used to generate level binary files."""
+"""Arkanoid code used to generate level binary files.
+
+Notes:
+    The binary level files are comprised of 3 bytes (X, Y and color)
+    for each brick.
+    XY coordinates indicate the top left corner of the brick.
+    Bricks are 13 pixels wide by 7 high.
+    Common X values:
+        6, 19, 32, 45, 58, 71, 84, 97, 110 (9 columns across)
+        16, 28, 40, 52, 64, 76, 88, 100 (8 columns across)
+    Common Y values:
+        27, 34, 41, 48, 55, 62, 69, 76 (8 rows is the maximum)
+    Color byte (0: Red, 1: Yellow, 2: Blue, 3: Pink, 4: Green)
+"""
 
 
 def generate_level01():
