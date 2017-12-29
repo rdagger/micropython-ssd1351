@@ -5,4 +5,4 @@ Full tutorial on my website [Rototron](https://www.rototron.info/raspberry-pi-es
 
 [![SSD1351 Tutorial](http://img.youtube.com/vi/a7DrFqqu-78/0.jpg)](https://youtu.be/a7DrFqqu-78)
 
-Tested on ESP32 (Wemos Lolin32)
+_Tested on ESP32 (Wemos Lolin32)_
