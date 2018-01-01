@@ -13,7 +13,7 @@ def test():
     contrast_range = list(range(1, 16)) + list(reversed(range(15)))
     for c in contrast_range:
         display.clear()
-        display.write_cmd(display.CONTRAST_MASTER, c)
+        display.contrast(c)
         display.draw_image('images/MicroPython128x128.raw', 0, 0, 128, 128)
         display.draw_text(30, 119, 'contrast: {0}'.format(c),
                           bally, color565(255, 255, 255))
