@@ -92,7 +92,7 @@ class Display(object):
         self.write_cmd(self.VCOMH, 0x05)  # Set VcomH voltage
         self.write_cmd(self.NORMAL_DISPLAY)  # Normal Display
         self.write_cmd(self.CONTRAST_MASTER, 0x0A)  # Contrast master
-        self.write_cmd(self.CONTRAST_ABC, 0xFF, 0xFF, 0xFF)
+        self.write_cmd(self.CONTRAST_ABC, 0xFF, 0xFF, 0xFF)  # Contrast RGB
         self.write_cmd(self.SET_VSL, 0xA0, 0xB5, 0x55)  # Set segment low volt.
         self.write_cmd(self.PRECHARGE2, 0x01)  # Precharge2
         self.write_cmd(self.DISPLAY_ON)  # Display on
@@ -140,10 +140,12 @@ class Display(object):
         """Set display contrast to specified level.
 
         Args:
-            level (int): Contrast level (0 - 255).
+            level (int): Contrast level (0 - 15).
+        Note:
+            Can pass list to specifiy
         """
-        assert(0 <= level <= 255)
-        self.write_cmd(self.CONTRAST_ABC, level, level, level)
+        assert(0 <= level < 16)
+        self.write_cmd(self.CONTRAST_MASTER, level)
 
     def display_off(self):
         """Turn display off."""
