@@ -67,11 +67,10 @@ def test():
         angle += ANGLE_STEP_SIZE
 
     sleep(5)
-    display.clear()
 
-    for r in range(1, HALF_WIDTH):
+    for r in range(CENTER_X, 0, -1):
         color = color565(*hsv_to_rgb(r / HALF_WIDTH, 1, 1))
-        display.draw_circle(CENTER_X, CENTER_Y, r, color)
+        display.fill_circle(CENTER_X, CENTER_Y, r, color)
 
     sleep(9)
     display.cleanup()
