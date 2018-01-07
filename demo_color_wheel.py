@@ -4,6 +4,13 @@ from ssd1351 import Display, color565
 from machine import Pin, SPI
 from math import cos, pi, sin
 
+HALF_WIDTH = const(64)
+HALF_HEIGHT = const(64)
+CENTER_X = const(63)
+CENTER_Y = const(63)
+ANGLE_STEP_SIZE = 0.05  # Decrease step size for higher resolution
+PI2 = pi * 2
+
 
 def hsv_to_rgb(h, s, v):
     """
@@ -49,28 +56,22 @@ def test():
     display = Display(spi, dc=Pin(17), cs=Pin(5), rst=Pin(16))
 
     x, y = 0, 0
-    w, h = 128, 128
-    length = 63
     angle = 0.0
-    angle_step_size = 0.05  # Decrease step size for higher resolution
-
     #  Loop all angles from 0 to 2 * PI radians
-    while angle < 2 * pi:
+    while angle < PI2:
         # Calculate x, y from a vector with known length and angle
-        x = length * sin(angle)
-        y = length * cos(angle)
-        x1 = int(x + w / 2)
-        y1 = int(y + h / 2)
-        color = color565(*hsv_to_rgb(angle / (2 * pi), 1, 1))
-        display.draw_line(x1, y1, 63, 63, color)
-        angle += angle_step_size
+        x = int(CENTER_X * sin(angle) + HALF_WIDTH)
+        y = int(CENTER_Y * cos(angle) + HALF_HEIGHT)
+        color = color565(*hsv_to_rgb(angle / PI2, 1, 1))
+        display.draw_line(x, y, CENTER_X, CENTER_Y, color)
+        angle += ANGLE_STEP_SIZE
 
     sleep(5)
     display.clear()
 
-    for r in range(1, 64):
-        color = color565(*hsv_to_rgb(r / 64, 1, 1))
-        display.draw_circle(63, 63, r, color)
+    for r in range(1, HALF_WIDTH):
+        color = color565(*hsv_to_rgb(r / HALF_WIDTH, 1, 1))
+        display.draw_circle(CENTER_X, CENTER_Y, r, color)
 
     sleep(9)
     display.cleanup()
