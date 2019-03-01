@@ -65,11 +65,6 @@ class Display(object):
             width (Optional int): Screen width (default 128)
             height (Optional int): Screen height (default 128)
         """
-        # Determine if implementation is CircuitPython or MicroPython
-        if implementation.name == 'circuitpython':
-            self.cp = True
-        else:
-            self.cp = False
         self.spi = spi
         self.cs = cs
         self.dc = dc
@@ -77,7 +72,7 @@ class Display(object):
         self.width = width
         self.height = height
         # Initialize GPIO pins and set implementation specific methods
-        if self.cp:
+        if implementation.name == 'circuitpython':
             self.cs.switch_to_output(value=True)
             self.dc.switch_to_output(value=False)
             self.rst.switch_to_output(value=True)
