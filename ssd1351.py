@@ -1,6 +1,7 @@
 """SSD1351 OLED module."""
-from utime import sleep_ms
+from time import sleep
 from math import cos, sin, pi, radians
+from sys import implementation
 
 
 def color565(r, g, b):
@@ -64,16 +65,32 @@ class Display(object):
             width (Optional int): Screen width (default 128)
             height (Optional int): Screen height (default 128)
         """
+        # Determine if implementation is CircuitPython or MicroPython
+        if implementation.name == 'circuitpython':
+            self.cp = True
+        else:
+            self.cp = False
         self.spi = spi
         self.cs = cs
         self.dc = dc
         self.rst = rst
         self.width = width
         self.height = height
-        # Initialize GPIO pins
-        self.cs.init(self.cs.OUT, value=1)
-        self.dc.init(self.dc.OUT, value=0)
-        self.rst.init(self.rst.OUT, value=1)
+        # Initialize GPIO pins and set implementation specific methods
+        if self.cp:
+            self.cs.switch_to_output(value=True)
+            self.dc.switch_to_output(value=False)
+            self.rst.switch_to_output(value=True)
+            self.reset = self.reset_cpy
+            self.write_cmd = self.write_cmd_cpy
+            self.write_data = self.write_data_cpy
+        else:
+            self.cs.init(self.cs.OUT, value=1)
+            self.dc.init(self.dc.OUT, value=0)
+            self.rst.init(self.rst.OUT, value=1)
+            self.reset = self.reset_mpy
+            self.write_cmd = self.write_cmd_mpy
+            self.write_data = self.write_data_mpy
         self.reset()
         # Send initialization commands
         self.write_cmd(self.COMMAND_LOCK, 0x12)  # Unlock IC MCU interface
@@ -800,15 +817,26 @@ class Display(object):
         with open(path, "rb") as f:
             return f.read(buf_size)
 
-    def reset(self):
-        """Perform reset: Low=initialization, High=normal operation."""
-        self.rst(0)
-        sleep_ms(50)
-        self.rst(1)
-        sleep_ms(50)
+    def reset_cpy(self):
+        """Perform reset: Low=initialization, High=normal operation.
+        Notes: CircuitPython implemntation
+        """
+        self.rst.value = False
+        sleep(.05)
+        self.rst.value = True
+        sleep(.05)
 
-    def write_cmd(self, command, *args):
-        """Write command to OLED.
+    def reset_mpy(self):
+        """Perform reset: Low=initialization, High=normal operation.
+        Notes: MicroPython implemntation
+        """
+        self.rst(0)
+        sleep(.05)
+        self.rst(1)
+        sleep(.05)
+
+    def write_cmd_mpy(self, command, *args):
+        """Write command to OLED (MicroPython).
 
         Args:
             command (byte): SSD1351 command code.
@@ -822,8 +850,25 @@ class Display(object):
         if len(args) > 0:
             self.write_data(bytearray(args))
 
-    def write_data(self, data):
-        """Write data to OLED.
+    def write_cmd_cpy(self, command, *args):
+        """Write command to OLED (CircuitPython).
+
+        Args:
+            command (byte): SSD1351 command code.
+            *args (optional bytes): Data to transmit.
+        """
+        self.dc.value = False
+        self.cs.value = False
+        self.spi.try_lock()
+        self.spi.write(bytearray([command]))
+        self.cs.value = True
+        # Handle any passed data
+        if len(args) > 0:
+            self.write_data(bytearray(args))
+        self.spi.unlock()
+
+    def write_data_mpy(self, data):
+        """Write data to OLED (MicroPython).
 
         Args:
             data (bytes): Data to transmit.
@@ -832,3 +877,16 @@ class Display(object):
         self.cs(0)
         self.spi.write(data)
         self.cs(1)
+
+    def write_data_cpy(self, data):
+        """Write data to OLED (CircuitPython).
+
+        Args:
+            data (bytes): Data to transmit.
+        """
+        self.dc.value = True
+        self.cs.value = False
+        self.spi.try_lock()
+        self.spi.write(data)
+        self.spi.unlock()
+        self.cs.value = True
