@@ -1,5 +1,5 @@
 # micropython-ssd1351
-MicroPython SSD1351 OLED Display Driver
+MicroPython & CircuitPython SSD1351 OLED Display Driver
 
 Full tutorial on my website [Rototron](https://www.rototron.info/raspberry-pi-esp32-micropython-oled-tutorial/) or click picture below for a YouTube video:
 
