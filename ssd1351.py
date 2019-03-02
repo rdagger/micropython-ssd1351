@@ -502,6 +502,7 @@ class Display(object):
                                     landscape)
             # Stop on error
             if w == 0 or h == 0:
+                print('Invalid width {0} or height {1}'.format(w, h))
                 return
 
             if landscape:
@@ -829,6 +830,42 @@ class Display(object):
         sleep(.05)
         self.rst(1)
         sleep(.05)
+
+    def scroll(self, enable=True):
+        """Enable or disable scrolling.
+
+        Args:
+            enable (bool): Default True
+        Notes:
+            It's not advisable to draw to the display during scrolling.
+        """
+        if enable:
+            self.write_cmd(self.START_SCROLL)
+        else:
+            self.write_cmd(self.STOP_SCROLL)
+
+    def set_scroll(self, horiz_offset, vert_start_row, vert_row_count,
+                   vert_offset, speed):
+        """Define scrolling area.
+
+        Args:
+            horiz_offset (byte): 0=None, 1-63=Left, 64-255=Right
+            vert_start_row (byte): First veritcal row to scroll
+            vert_row_count (byte): Number of veritical rows to scroll
+            vert_offset (byte): 0:None, 1-63=Up, 64-127=Down
+            speed (byte): 0=Fastest, 1=Normal, 2=Slow, 3=Slowest
+        Notes:
+            horiz_offset is only left, right or still (no speed).
+            vert_offset controls speed in addition to direction.  1-63 is slow
+            to fast (up) and 64-127 is fast to slow (down).
+            There is no horizontal start row and count unlike the vertical.
+            Once scrolling area is defined, use scroll method to start or stop.
+        """
+        if vert_start_row + vert_row_count > self.height:
+            print('Start row plus row count cannot exceed display height.')
+            return
+        self.write_cmd(self.HORIZ_SCROLL, horiz_offset, vert_start_row,
+                       vert_row_count, vert_offset, speed)
 
     def write_cmd_mpy(self, command, *args):
         """Write command to OLED (MicroPython).

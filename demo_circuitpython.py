@@ -1,8 +1,7 @@
 """SSD1351 demo (CircuitPython Text, Shape & Sprite)."""
-
 import board
-import busio
-import digitalio
+from busio import SPI
+from digitalio import DigitalInOut
 from ssd1351 import Display, color565
 from xglcd_font import XglcdFont
 from time import monotonic, sleep
@@ -99,12 +98,12 @@ def test():
         exit()
     try:
         # Configuratoin for CS and DC pins:
-        cs_pin = digitalio.DigitalInOut(board.P0_15)
-        dc_pin = digitalio.DigitalInOut(board.P0_17)
-        rst_pin = digitalio.DigitalInOut(board.P0_20)
+        cs_pin = DigitalInOut(board.P0_15)
+        dc_pin = DigitalInOut(board.P0_17)
+        rst_pin = DigitalInOut(board.P0_20)
 
         # Setup SPI bus using hardware SPI:
-        spi = busio.SPI(clock=board.P0_24, MOSI=board.P0_22)
+        spi = SPI(clock=board.P0_24, MOSI=board.P0_22)
 
         # Create the SSD1351 display:
         display = Display(spi, dc=dc_pin, cs=cs_pin, rst=rst_pin)
