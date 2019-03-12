@@ -8,9 +8,6 @@ from adafruit_bluefruit_connect.button_packet import ButtonPacket
 from random import randint, seed
 from time import monotonic, sleep
 
-uart_server = UARTServer()
-uart_server.start_advertising()
-
 # Configuration for CS, DC and Reset pins (Feather nRF52840 Express):
 cs_pin = DigitalInOut(board.D11)
 dc_pin = DigitalInOut(board.D10)
@@ -368,9 +365,15 @@ mario = Mario('images/Mario13x96.raw', 13, 96, 127, 128, 6, display)
 room = Room(START_ROOM_X, START_ROOM_Y, 16, 16, 127, 128, display)
 mario.update_pos(room)
 mario.draw()
+uart_server = UARTServer()
 
 while True:
-    if uart_server.connected:
+    uart_server.start_advertising()
+    # Wait for BLE connection
+    while not uart_server.connected:
+        pass
+
+    while uart_server.connected:
         timer = monotonic()
         if uart_server.in_waiting:  # Check for BLE packets
             packet = Packet.from_stream(uart_server)

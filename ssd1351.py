@@ -891,13 +891,15 @@ class Display(object):
         """
         self.dc.value = False
         self.cs.value = False
-        self.spi.try_lock()
+        # Confirm SPI locked before writing
+        while not self.spi.try_lock():
+            pass
         self.spi.write(bytearray([command]))
+        self.spi.unlock()
         self.cs.value = True
         # Handle any passed data
         if len(args) > 0:
             self.write_data(bytearray(args))
-        self.spi.unlock()
 
     def write_data_mpy(self, data):
         """Write data to OLED (MicroPython).
@@ -918,7 +920,9 @@ class Display(object):
         """
         self.dc.value = True
         self.cs.value = False
-        self.spi.try_lock()
+        # Confirm SPI locked before writing
+        while not self.spi.try_lock():
+            pass
         self.spi.write(data)
         self.spi.unlock()
         self.cs.value = True
