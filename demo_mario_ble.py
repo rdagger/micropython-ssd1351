@@ -32,18 +32,18 @@ RIGHT = ButtonPacket.RIGHT
 BORDER_WIDTH = const(2)
 WALL_HORIZ_LENGTH = const(27)
 WALL_VERT_LENGTH = const(44)
-START_ROOM_X = const(2)
-START_ROOM_Y = const(3)
+START_ROOM_X = const(5)
+START_ROOM_Y = const(10)
 
-RED = const(0XF800)  # (255, 0, 0)
-GREEN = const(0X07E0)  # (0, 255, 0)
-BLUE = const(0X001F)  # (0, 0, 255)
-YELLOW = const(0XFFE0)  # (255, 255, 0)
-FUCHSIA = const(0XF81F)  # (255, 0, 255)
-ORANGE = const(0XFC00)  # (255, 128, 0)
-CHARTREUSE = const(0X87E0)  # (128, 255, 0)
-INDIGO = const(0X801F)  # (128, 0, 255)
-ROOM_COLORS = [RED, GREEN, BLUE, YELLOW, FUCHSIA, ORANGE, CHARTREUSE, INDIGO]
+RED = const(0XF800)
+GREEN = const(0X07E0)
+BLUE = const(0X001F)
+YELLOW = const(0XFFE0)
+CHARTREUSE = const(0XCFE0)
+ORANGE = const(0XFC00)
+INDIGO = const(0xB81F)
+CYAN = const(0X07FF)
+ROOM_COLORS = [RED, GREEN, BLUE, YELLOW, CHARTREUSE, ORANGE, INDIGO, CYAN]
 
 
 class Mario(object):
