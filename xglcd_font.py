@@ -20,9 +20,9 @@ class XglcdFont(object):
         you must use XP compatibility mode or you can just use the clipboard.
     """
 
-    # Dict to tranlate bitwise values to byte position
+    # Dict to translate bitwise values to byte position
     BIT_POS = {1: 0, 2: 2, 4: 4, 8: 6, 16: 8, 32: 10, 64: 12, 128: 14, 256: 16}
-    # Dict to tranlate bitwise values to byte position (for transparent)
+    # Dict to translate bitwise values to byte position (for transparent)
     BIT_POS_T = {1: 0, 2: 1, 4: 2, 8: 3, 16: 4, 32: 5, 64: 6, 128: 7, 256: 8}
 
     def __init__(self, path, width, height, start_letter=32, letter_count=96):
