@@ -22,6 +22,8 @@ class XglcdFont(object):
 
     # Dict to tranlate bitwise values to byte position
     BIT_POS = {1: 0, 2: 2, 4: 4, 8: 6, 16: 8, 32: 10, 64: 12, 128: 14, 256: 16}
+    # Dict to tranlate bitwise values to byte position (for transparent)
+    BIT_POS_T = {1: 0, 2: 1, 4: 2, 8: 3, 16: 4, 32: 5, 64: 6, 128: 7, 256: 8}
 
     def __init__(self, path, width, height, start_letter=32, letter_count=96):
         """Constructor for X-GLCD Font object.
@@ -77,6 +79,25 @@ class XglcdFont(object):
             yield self.BIT_POS[b]
             n ^= b
 
+    def lit_bits_t(self, n):
+        """Return positions of 1 bits only (transparent)."""
+        while n:
+            b = n & (~n+1)
+            yield self.BIT_POS_T[b]
+            n ^= b
+
+    def get_width_height(self, letter):
+        """Return width and height of letter."""
+        # Get index of letter
+        letter_ord = ord(letter) - self.start_letter
+        # Confirm font contains letter
+        if letter_ord >= self.letter_count:
+            print('Font does not contain character: ' + letter)
+            return 0, 0
+        bytes_per_letter = self.bytes_per_letter
+        offset = letter_ord * bytes_per_letter
+        return self.letters[offset], self.height
+
     def get_letter(self, letter, color, background=0, landscape=False):
         """Convert letter byte data to pixels.
 
@@ -112,33 +133,87 @@ class XglcdFont(object):
 
         msb, lsb = color.to_bytes(2, 'big')
 
+        column_size = letter_height * 2
         if landscape:
-            # Populate in flip order for landscape
-            pos = (letter_size * 2) - (letter_height * 2)
+            # Populate starting at end of each column
+            pos = column_size - 1
         else:
             # Populate buffer in order for portrait
             pos = 0
-
         lh = letter_height
+        start_pos = pos
         # Loop through letter byte data and convert to pixel data
         for b in mv[1:]:
             # Process only colored bits
             for bit in self.lit_bits(b):
-                buf[bit + pos] = msb
-                buf[bit + pos + 1] = lsb
+                if landscape:
+                    # print("lh: {}, pos: {}, bit: {}".format(lh, pos, bit))
+                    buf[pos - (bit + 1)] = msb
+                    buf[pos - bit] = lsb
+                else:
+                    # print("lh: {}, pos: {}, bit: {}".format(lh, pos, bit))
+                    buf[bit + pos] = msb
+                    buf[bit + pos + 1] = lsb
             if lh > 8:
-                # Increment position by double byte
-                pos += 16
+                if landscape:
+                    # Decrement position by double byte
+                    pos -= 16
+                else:
+                    # Increment position by double byte
+                    pos += 16
                 lh -= 8
             else:
                 if landscape:
-                    # Descrease position to start of previous column
-                    pos -= (letter_height * 4) - (lh * 2)
+                    # Move position to end of next row
+                    pos = start_pos + column_size
+                    start_pos = pos
                 else:
                     # Increase position by remaing letter height to next column
                     pos += lh * 2
                 lh = letter_height
         return buf, letter_width, letter_height
+
+    def get_letter_trans(self, letter, landscape=False):
+        """Convert letter byte data to X,Y pixels for transparent drawing.
+
+        Args:
+            letter (string): Letter to return (must exist within font).
+            landscape (bool): Orientation (default: False = portrait)
+        Yields:
+            (int, int): X,Y relative position of bits to draw
+        """
+        # Get index of letter
+        letter_ord = ord(letter) - self.start_letter
+        # Confirm font contains letter
+        if letter_ord >= self.letter_count:
+            print('Font does not contain character: ' + letter)
+            return b'', 0, 0
+        bytes_per_letter = self.bytes_per_letter
+        offset = letter_ord * bytes_per_letter
+        mv = memoryview(self.letters[offset:offset + bytes_per_letter])
+
+        # Get width of letter (specified by first byte)
+        letter_height = self.height
+        x = 0
+
+        # Determine number of bytes per letter Y column
+        byte_height = int(letter_height / 8) + (letter_height % 8 > 0)
+        bh = 0
+        # Loop through letter byte data and convert to pixel data
+        for b in mv[1:]:
+            # Process only colored bits
+            for bit in self.lit_bits_t(b):
+                if landscape:
+                    yield letter_height - ((bh << 3) + bit), x
+                else:
+                    yield x, (bh << 3) + bit
+            if bh < byte_height - 1:
+                # Next column byte
+                bh += 1
+            else:
+                # Next column
+                x += 1
+                bh = 0
 
     def measure_text(self, text, spacing=1):
         """Measure length of text string in pixels.

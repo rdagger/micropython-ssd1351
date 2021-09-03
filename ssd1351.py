@@ -1,4 +1,5 @@
 """SSD1351 OLED module."""
+from framebuf import FrameBuffer, RGB565
 from time import sleep
 from math import cos, sin, pi, radians
 from sys import implementation
@@ -327,7 +328,6 @@ class Display(object):
             return w, h
 
         if landscape:
-            y -= w
             if self.is_off_grid(x, y, x + h - 1, y + w - 1):
                 return
             self.block(x, y,
@@ -341,6 +341,27 @@ class Display(object):
                        x + w - 1, y + h - 1,
                        buf)
             self.write_cmd(self.SET_REMAP, 0x74)  # Switch back to horizontal
+        return w, h
+
+    def draw_letter_trans(self, x, y, letter, font, color, landscape=False):
+        """Draw a letter with transparent background.
+
+        Args:
+            x (int): Starting X position.
+            y (int): Starting Y position.
+            letter (string): Letter to draw.
+            font (XglcdFont object): Font.
+            color (int): RGB565 color value.
+            landscape (bool): Orientation (default: False = portrait)
+        """
+        w, h = font.get_width_height(letter)
+        # Check for errors
+        if w == 0:
+            return w, h
+
+        # Draw letter (set pixels only for transparency)
+        for x_offset, y_offset in font.get_letter_trans(letter, landscape):
+            self.draw_pixel(x + x_offset, y + y_offset, color)
         return w, h
 
     def draw_line(self, x1, y1, x2, y2, color):
@@ -483,7 +504,7 @@ class Display(object):
         self.block(x, y, x2, y2, buf)
 
     def draw_text(self, x, y, text, font, color,  background=0,
-                  landscape=False, spacing=1):
+                  landscape=False, spacing=1, transparent=False):
         """Draw text.
 
         Args:
@@ -495,11 +516,16 @@ class Display(object):
             background (int): RGB565 background color (default: black).
             landscape (bool): Orientation (default: False = portrait)
             spacing (int): Pixels between letters (default: 1)
+            transparent(bool): Transparent background (slower drawing)
         """
         for letter in text:
             # Get letter array and letter dimensions
-            w, h = self.draw_letter(x, y, letter, font, color, background,
-                                    landscape)
+            if transparent:
+                w, h = self.draw_letter_trans(x, y, letter, font, color,
+                                              landscape)
+            else:
+                w, h = self.draw_letter(x, y, letter, font, color, background,
+                                        landscape)
             # Stop on error
             if w == 0 or h == 0:
                 print('Invalid width {0} or height {1}'.format(w, h))
@@ -507,16 +533,45 @@ class Display(object):
 
             if landscape:
                 # Fill in spacing
-                if spacing:
-                    self.fill_hrect(x, y - w - spacing, h, spacing, background)
+                if spacing and not transparent:
+                    self.fill_hrect(x, y + w, h, spacing, background)
                 # Position y for next letter
-                y -= (w + spacing)
+                y += (w + spacing)
             else:
                 # Fill in spacing
-                if spacing:
+                if spacing and not transparent:
                     self.fill_vrect(x + w, y, spacing, h, background)
                 # Position x for next letter
                 x += w + spacing
+
+    def draw_text8x8(self, x, y, text, color, landscape=False):
+        """Draw text using built-in MicroPython 8x8 bit font.
+
+        Args:
+            x (int): Starting X position.
+            y (int): Starting Y position.
+            text (string): Text to draw.
+            color (int): RGB565 color value.
+            landscape (bool): Orientation (default: False = portrait)
+        """
+        text_length = len(text) * 8
+        # Confirm coordinates in boundary
+        if self.is_off_grid(x, y, x + 7, y + 7):
+            return
+        # Rearrange color
+        r = (color & 0xF800) >> 8
+        g = (color & 0x07E0) >> 3
+        b = (color & 0x1F) << 3
+        buf = bytearray(text_length * 16)
+        fbuf = FrameBuffer(buf, text_length, 8, RGB565)
+        fbuf.text(text, 0, 0, color565(b, r, g))
+        if landscape:
+            self.write_cmd(self.SET_REMAP, 0x77)  # Vertical address reverse
+            self.block(self.width - (x + 8), y,
+                       (self.width - (x + 8)) + 7, y + text_length - 1, buf)
+            self.write_cmd(self.SET_REMAP, 0x74)  # Switch back to horizontal
+        else:
+            self.block(x, y, x + text_length - 1, y + 7, buf)
 
     def draw_vline(self, x, y, h, color):
         """Draw a vertical line.

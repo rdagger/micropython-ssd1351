@@ -10,6 +10,7 @@ def test():
     spi = SPI(2, baudrate=14500000, sck=Pin(18), mosi=Pin(23))
     display = Display(spi, dc=Pin(17), cs=Pin(5), rst=Pin(16))
 
+    print("Loading fonts, please wait.")
     arcadepix = XglcdFont('fonts/ArcadePix9x11.c', 9, 11)
     bally = XglcdFont('fonts/Bally7x9.c', 7, 9)
     broadway = XglcdFont('fonts/Broadway17x15.c', 17, 15)
@@ -19,6 +20,7 @@ def test():
     robotron = XglcdFont('fonts/Robotron7x11.c', 7, 11)
     unispace = XglcdFont('fonts/Unispace12x24.c', 12, 24)
     wendy = XglcdFont('fonts/Wendy7x8.c', 7, 8)
+    print("Fonts loaded.")
 
     display.draw_text(0, 0, 'Arcade Pix 9x11', arcadepix, color565(255, 0, 0))
     display.draw_text(0, 12, 'Bally 7x9', bally, color565(0, 255, 0))
@@ -36,25 +38,25 @@ def test():
     sleep(9)
     display.clear()
 
-    display.draw_text(0, 127, 'Arcade Pix 9x11', arcadepix,
+    display.draw_text(0, 0, 'Arcade Pix 9x11', arcadepix,
                       color565(255, 0, 0),
                       landscape=True)
-    display.draw_text(12, 127, 'Bally 7x9', bally, color565(0, 255, 0),
+    display.draw_text(12, 0, 'Bally 7x9', bally, color565(0, 255, 0),
                       landscape=True)
-    display.draw_text(23, 127, 'Broadway', broadway, color565(0, 0, 255),
+    display.draw_text(23, 0, 'Broadway', broadway, color565(0, 0, 255),
                       landscape=True)
-    display.draw_text(36, 127, 'Espresso', espresso_dolce,
+    display.draw_text(36, 0, 'Espresso', espresso_dolce,
                       color565(0, 255, 255), landscape=True)
-    display.draw_text(64, 127, 'Fixed Font 5x8', fixed_font,
+    display.draw_text(64, 0, 'Fixed Font 5x8', fixed_font,
                       color565(255, 0, 255), landscape=True)
-    display.draw_text(76, 127, 'Neato 5x7', neato, color565(255, 255, 0),
+    display.draw_text(76, 0, 'Neato 5x7', neato, color565(255, 255, 0),
                       landscape=True)
-    display.draw_text(85, 127, 'Robotron 7x11', robotron,
+    display.draw_text(85, 0, 'Robotron 7x11', robotron,
                       color565(255, 255, 255),
                       landscape=True)
-    display.draw_text(96, 127, 'Unispace', unispace, color565(255, 128, 0),
+    display.draw_text(96, 0, 'Unispace', unispace, color565(255, 128, 0),
                       landscape=True)
-    display.draw_text(120, 127, 'Wendy 7x8', wendy, color565(255, 0, 128),
+    display.draw_text(120, 0, 'Wendy 7x8', wendy, color565(255, 0, 128),
                       landscape=True)
 
     sleep(9)
