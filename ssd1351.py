@@ -1,5 +1,6 @@
 """SSD1351 OLED module."""
 from framebuf import FrameBuffer, RGB565
+from struct import pack, unpack
 from time import sleep
 from math import cos, sin, pi, radians
 from sys import implementation
@@ -309,7 +310,7 @@ class Display(object):
                            buf)
 
     def draw_letter(self, x, y, letter, font, color, background=0,
-                    landscape=False):
+                    landscape=False, flip=False):
         """Draw a letter.
 
         Args:
@@ -320,9 +321,14 @@ class Display(object):
             color (int): RGB565 color value.
             background (int): RGB565 background color (default: black).
             landscape (bool): Orientation (default: False = portrait)
+            flip (bool): Flips letter upside down (default: False = normal)
         """
         buf, w, h = font.get_letter(letter, color, background,
                                     landscape)
+        # Flip letter upside down if specified
+        if flip:
+            buf = self.reverse_bytearray16(buf)
+
         # Check for errors
         if w == 0:
             return w, h
@@ -504,7 +510,7 @@ class Display(object):
         self.block(x, y, x2, y2, buf)
 
     def draw_text(self, x, y, text, font, color,  background=0,
-                  landscape=False, spacing=1, transparent=False):
+                  landscape=False, flip=False, spacing=1, transparent=False):
         """Draw text.
 
         Args:
@@ -515,9 +521,19 @@ class Display(object):
             color (int): RGB565 color value.
             background (int): RGB565 background color (default: black).
             landscape (bool): Orientation (default: False = portrait)
+            flip (bool): Flips letter upside down (default: False = normal)
             spacing (int): Pixels between letters (default: 1)
             transparent(bool): Transparent background (slower drawing)
+        Note:
+            flip not supported for transparent text.
         """
+        
+        if flip and transparent:
+            raise NotImplementedError("Flip not supported for transparent text.")
+        elif flip:
+            # Reverse text if flipped 
+            text = "".join(reversed(text))
+
         for letter in text:
             # Get letter array and letter dimensions
             if transparent:
@@ -525,7 +541,7 @@ class Display(object):
                                               landscape)
             else:
                 w, h = self.draw_letter(x, y, letter, font, color, background,
-                                        landscape)
+                                        landscape, flip)
             # Stop on error
             if w == 0 or h == 0:
                 print('Invalid width {0} or height {1}'.format(w, h))
@@ -885,6 +901,16 @@ class Display(object):
         sleep(.05)
         self.rst(1)
         sleep(.05)
+
+    def reverse_bytearray16(self, data):
+        """Reverse bytearray of 16 bit colors
+
+        Args:
+            data (bytearray): Bytearray of 16 bit colors
+        """
+        data = unpack('<{0}H'.format(len(data)//2), bytearray(reversed(data)))
+        return(pack('>{0}H'.format(len(data)), *data))
+
 
     def scroll(self, enable=True):
         """Enable or disable scrolling.
