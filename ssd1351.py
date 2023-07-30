@@ -599,7 +599,7 @@ class Display(object):
             color (int): RGB565 color value.
         """
         # Confirm coordinates in boundary
-        if self.is_off_grid(x, y, x, y + h):
+        if self.is_off_grid(x, y, x, y + h - 1):
             return
         line = color.to_bytes(2, 'big') * h
         self.block(x, y, x, y + h - 1, line)
