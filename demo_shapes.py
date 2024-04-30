@@ -1,16 +1,14 @@
 """SSD1351 demo (shapes)."""
 from time import sleep
 from ssd1351 import Display, color565
-from machine import Pin, SPI
+from machine import Pin, SPI  # type: ignore
 
 
 def test():
     """Test code."""
     # Baud rate of 14500000 seems about the max
     spi = SPI(2, baudrate=14500000, sck=Pin(18), mosi=Pin(23))
-    print('spi started')
     display = Display(spi, dc=Pin(17), cs=Pin(5), rst=Pin(16))
-    print('display started')
 
     display.clear(color565(64, 0, 255))
     sleep(1)

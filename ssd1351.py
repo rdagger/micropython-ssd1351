@@ -1,9 +1,10 @@
 """SSD1351 OLED module."""
-from framebuf import FrameBuffer, RGB565
 from struct import pack, unpack
 from time import sleep
 from math import cos, sin, pi, radians
 from sys import implementation
+from framebuf import FrameBuffer, RGB565  # type: ignore
+from micropython import const  # type: ignore
 
 
 def color565(r, g, b):
@@ -158,7 +159,7 @@ class Display(object):
         Note:
             Can pass list to specifiy
         """
-        assert(0 <= level < 16)
+        assert (0 <= level < 16)
         self.write_cmd(self.CONTRAST_MASTER, level)
 
     def display_off(self):
@@ -527,11 +528,11 @@ class Display(object):
         Note:
             flip not supported for transparent text.
         """
-        
+
         if flip and transparent:
-            raise NotImplementedError("Flip not supported for transparent text.")
+            raise NotImplementedError("Flip not supported on transparent text")
         elif flip:
-            # Reverse text if flipped 
+            # Reverse text if flipped
             text = "".join(reversed(text))
 
         for letter in text:
@@ -878,7 +879,7 @@ class Display(object):
             w (int): Width of image.
             h (int): Height of image.
         Notes:
-            w x h cannot exceed 2048
+            Images greater than 2048 bytes may require PSRAM
         """
         buf_size = w * h * 2
         with open(path, "rb") as f:
@@ -909,8 +910,7 @@ class Display(object):
             data (bytearray): Bytearray of 16 bit colors
         """
         data = unpack('<{0}H'.format(len(data)//2), bytearray(reversed(data)))
-        return(pack('>{0}H'.format(len(data)), *data))
-
+        return (pack('>{0}H'.format(len(data)), *data))
 
     def scroll(self, enable=True):
         """Enable or disable scrolling.
