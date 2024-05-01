@@ -20,13 +20,13 @@ def test():
     background = bytearray(
         display.load_sprite('images/XP_background128x128.raw', 128, 128))
     # Create frame buffer for background
-    backgroundFB = FrameBuffer(background, 128, 128, RGB565)
+    background_fb = FrameBuffer(background, 128, 128, RGB565)
 
     # Load ostrich sprite and convert to bytearray for framebuf compatibility
     ostrich = bytearray(
         display.load_sprite('images/Ostrich65x64.raw', 65, 64))
     # Create frame buffer for foreground ostrich
-    ostrichFB = FrameBuffer(ostrich, 65, 64, RGB565)
+    ostrich_fb = FrameBuffer(ostrich, 65, 64, RGB565)
 
     # Get X,Y coordinates to center ostrich on screen
     x = (display.width - 65) // 2
@@ -36,7 +36,7 @@ def test():
     key = unpack('>H', pack('<H', color565(0, 255, 0)))[0]
 
     # Draw ostrich on background with transparent key
-    backgroundFB.blit(ostrichFB, x, y, key)
+    background_fb.blit(ostrich_fb, x, y, key)
 
     # Draw background with ostrich on display
     display.draw_sprite(background, 0, 0, 128, 128)
