@@ -17,7 +17,7 @@ def create_palette(foreground, background=0, invert=False):
         background(int): Background color in RGB656 format (Default Black)
         invert(bool): Invert foreground and background (default False)
     Returns:
-            FrameBuffer: Color palette
+        FrameBuffer: Color palette
     """
     # Need to swap endian colors
     foreground = unpack('>H', pack('<H', foreground))[0]
@@ -39,7 +39,7 @@ def load_pbm(filename):
     Args:
         filename(str): Path to bitmap
     Returns:
-            FrameBuffer: Image in MONO_HLSB format
+        FrameBuffer: Image in MONO_HLSB format
     """
     with open(filename, 'rb') as f:
         # Read and discard the first 2 lines
