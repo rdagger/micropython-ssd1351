@@ -39,7 +39,11 @@ def load_pbm(filename):
     Args:
         filename(str): Path to bitmap
     Returns:
-        FrameBuffer: Image in MONO_HLSB format
+        Returns:
+        tuple: A tuple containing the following:
+            - FrameBuffer: The image data in MONO_HLSB format.
+            - int: The width of the image.
+            - int: The height of the image.
     """
     with open(filename, 'rb') as f:
         # Read and discard the first 2 lines
