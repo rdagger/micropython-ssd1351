@@ -14,7 +14,7 @@ def create_palette(foreground, background=0, invert=False):
 
     Args:
         foreground(int): Foreground color in RGB656 format
-        background(int): Background color in RGB656 format (Default Black)
+        background(int): Background color in RGB656 format (default Black)
         invert(bool): Invert foreground and background (default False)
     Returns:
         FrameBuffer: Color palette
