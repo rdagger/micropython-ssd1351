@@ -561,27 +561,30 @@ class Display(object):
                 # Position x for next letter
                 x += w + spacing
 
-    def draw_text8x8(self, x, y, text, color, landscape=False):
+    def draw_text8x8(self, x, y, text, color, background=0, landscape=False):
         """Draw text using built-in MicroPython 8x8 bit font.
 
         Args:
-            x (int): Starting X position.
-            y (int): Starting Y position.
-            text (string): Text to draw.
-            color (int): RGB565 color value.
+            x (int): Starting X position
+            y (int): Starting Y position
+            text (string): Text to draw
+            color (int): RGB565 color value
+            background (int): RGB565 background color (default: black)
             landscape (bool): Orientation (default: False = portrait)
         """
         text_length = len(text) * 8
         # Confirm coordinates in boundary
         if self.is_off_grid(x, y, x + 7, y + 7):
             return
-        # Rearrange color
-        r = (color & 0xF800) >> 8
-        g = (color & 0x07E0) >> 3
-        b = (color & 0x1F) << 3
         buf = bytearray(text_length * 16)
         fbuf = FrameBuffer(buf, text_length, 8, RGB565)
-        fbuf.text(text, 0, 0, color565(b, r, g))
+        if background != 0:
+            # Swap background color bytes to correct for framebuf endianness
+            b_color = ((background & 0xFF) << 8) | ((background & 0xFF00) >> 8)
+            fbuf.fill(b_color)
+        # Swap text color bytes to correct for framebuf endianness
+        t_color = ((color & 0x00FF) << 8) | ((color & 0xFF00) >> 8)
+        fbuf.text(text, 0, 0, t_color)
         if landscape:
             self.write_cmd(self.SET_REMAP, 0x77)  # Vertical address reverse
             self.block(self.width - (x + 8), y,

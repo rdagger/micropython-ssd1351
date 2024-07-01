@@ -1,7 +1,7 @@
 """SSD1351 demo (fonts 8x8)."""
 from time import sleep
 from ssd1351 import Display, color565
-from machine import Pin, SPI
+from machine import Pin, SPI  # type: ignore
 
 
 def test():
