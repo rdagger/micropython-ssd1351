@@ -12,13 +12,13 @@ from utime import sleep_us, ticks_us, ticks_diff  # type: ignore
 class SpriteFrameBuffer(object):
     """Sprite Frame Buffer."""
 
-    def __init__(self, sprite_path, background_image,
+    def __init__(self, sprite_path, background_path,
                  w, h, speed, display):
         """Initialize sprite.
 
         Args:
             sprite_path (string): Path of sprite image.
-            background_image (string): Path of background image.
+            background_path (string): Path of background image.
             w, h (int): Width and height of sprite.
             speed(int): Initial XY-Speed of sprite.
             display (SSD1351): OLED display object.
@@ -39,7 +39,7 @@ class SpriteFrameBuffer(object):
                                           self.screen_height, RGB565)
         # Load background and convert to bytearray for framebuf compatiblility
         background = bytearray(
-            display.load_sprite(background_image, self.screen_width,
+            display.load_sprite(background_path, self.screen_width,
                                 self.screen_height))
         # Create frame buffer for background
         self.background_fb = FrameBuffer(background, self.screen_width,
