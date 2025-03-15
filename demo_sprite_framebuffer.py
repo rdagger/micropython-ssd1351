@@ -1,4 +1,7 @@
-"""SSD1351 demo (sprite framebuffer)."""
+"""SSD1351 demo (sprite framebuffer).
+
+Notes: Will likely require device with PSRAM.
+"""
 from framebuf import FrameBuffer, RGB565  # type: ignore
 from machine import Pin, SPI  # type: ignore
 from ssd1351 import Display, color565
